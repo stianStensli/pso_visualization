@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import ktx.app.KtxApplicationAdapter
 import ktx.app.clearScreen
 import ktx.graphics.use
+import model.PSO
 import kotlin.math.*
 
 const val WIDTH = 1920
@@ -29,24 +30,29 @@ class TiminingApplication : KtxApplicationAdapter {
     private lateinit var shapeRenderer: ShapeRenderer
     private lateinit var plane: Texture
     private lateinit var fps: FPSLogger
-    private val squares_per_row = 64
-    private val size: Float = WIDTH.toFloat() / squares_per_row
+    private val squaresPerRow = 264
+    private val size: Float = WIDTH.toFloat() / squaresPerRow
     var ticker: Long = 0
     var t0 = System.currentTimeMillis()
     var centerX: Float = 0.0f
     var centerY: Float = 0.0f
+    var algorithm = PSO()
 
     override fun create() {
         fps = FPSLogger()
         spriteBatch = SpriteBatch()
         shapeRenderer = ShapeRenderer()
         plane = Texture(Gdx.files.internal("textures/fly.png"))
+        algorithm.init { (x, y) -> valueFunctionPso(x, y) }
     }
 
     override fun render() {
-        fps.log()
-        centerX = ((sin(ticker.toDouble() / 1100) * WIDTH).toFloat() + WIDTH) / 2
-        centerY = ((cos(ticker.toDouble() / 650) * HEIGHT).toFloat() + HEIGHT) / 2
+        val a = algorithm.getGlobalBest().getPosition().get(0).toString() +","+ algorithm.getGlobalBest().getPosition().get(1) +", " + algorithm.getGlobalBest().getFitness()
+        println(a)
+        algorithm.run {(x, y) -> valueFunctionPso(x, y) }
+
+        centerX =  WIDTH.toFloat()/2
+        centerY = HEIGHT.toFloat() / 2
         val t1 = System.currentTimeMillis()
         ticker += (t1 - t0)
         t0 = t1
@@ -56,21 +62,21 @@ class TiminingApplication : KtxApplicationAdapter {
             var offsetX = 0f;
             var offsetY = 0f;
 
-            for (y in 0..squares_per_row) {
-                var blueValueTopLeft = blueValue(0, y)
-                var blueValueBottomLeft = blueValue(0, y + 1)
-                for (x in 0..squares_per_row) {
-                    val blueValueTopRigth = blueValue(x + 1, y)
-                    val blueValueBottomRigth = blueValue(x + 1, y + 1)
+            for (y in 0..squaresPerRow) {
+                var blueValueTopLeft = valueFunction(0, y)
+                var blueValueBottomLeft = valueFunction(0, y + 1)
+                for (x in 0..squaresPerRow) {
+                    val blueValueTopRigth = valueFunction(x + 1, y)
+                    val blueValueBottomRigth = valueFunction(x + 1, y + 1)
                     it.rect(
                         offsetX,
                         offsetY,
                         size,
                         size,
-                        Color(1 - blueValueTopLeft, 0.2f, blueValueTopLeft, 1f),
-                        Color(1 - blueValueTopRigth, 0.2f, blueValueTopRigth, 1f),
-                        Color(1 - blueValueBottomRigth, 0.2f, blueValueBottomRigth, 1f),
-                        Color(1 - blueValueBottomLeft, 0.2f, blueValueBottomLeft, 1f),
+                        Color(1 - blueValueTopLeft, 0.5f, blueValueTopLeft, 1f),
+                        Color(1 - blueValueTopRigth, 0.5f, blueValueTopRigth, 1f),
+                        Color(1 - blueValueBottomRigth, 0.5f, blueValueBottomRigth, 1f),
+                        Color(1 - blueValueBottomLeft, 0.5f, blueValueBottomLeft, 1f),
                     )
                     blueValueTopLeft = blueValueTopRigth
                     blueValueBottomLeft = blueValueBottomRigth
@@ -81,11 +87,22 @@ class TiminingApplication : KtxApplicationAdapter {
             }
         }
         spriteBatch.use {
-            it.draw(plane, centerX / 2, HEIGHT.toFloat() / 2, 56f, 056f)
+            algorithm.getPopulation().iterator().forEach {
+                spriteBatch.draw(plane, it.getPosition()[0]-28, it.getPosition()[1]-28, 56f, 56f)
+            }
         }
     }
 
-    fun blueValue(posX: Int, posY: Int): Float {
-        return 1 - sqrt((posX * size - centerX).pow(2) + (posY * size - centerY).pow(2)) / WIDTH * 9
+    private fun valueFunction(posX: Int, posY: Int): Float {
+        return valueFunctionPso(posX * size, posY * size)
+    }
+
+    private fun valueFunctionPso(posX: Float, posY: Float): Float {
+        val dist = distFromCenter(posX, posY)
+        return 1 - dist / WIDTH * 9
+    }
+
+    private fun distFromCenter(x: Float, y: Float): Float {
+        return sqrt((x - centerX).pow(2) + (y - centerY).pow(2))
     }
 }
