@@ -14,7 +14,7 @@ import kotlin.math.*
 
 const val WIDTH = 1920
 const val HEIGHT = 1080
-const val FPS = 60
+const val FPS = 30
 
 fun main() {
     val config = LwjglApplicationConfiguration().apply {
@@ -47,8 +47,6 @@ class TiminingApplication : KtxApplicationAdapter {
     }
 
     override fun render() {
-        val a = algorithm.getGlobalBest().getPosition().get(0).toString() +","+ algorithm.getGlobalBest().getPosition().get(1) +", " + algorithm.getGlobalBest().getFitness()
-        println(a)
         algorithm.run {(x, y) -> valueFunctionPso(x, y) }
 
         centerX =  WIDTH.toFloat()/2
@@ -72,7 +70,7 @@ class TiminingApplication : KtxApplicationAdapter {
                         offsetX,
                         offsetY,
                         size,
-                        size,
+                         size,
                         Color(1 - blueValueTopLeft, 0.5f, blueValueTopLeft, 1f),
                         Color(1 - blueValueTopRigth, 0.5f, blueValueTopRigth, 1f),
                         Color(1 - blueValueBottomRigth, 0.5f, blueValueBottomRigth, 1f),
@@ -88,7 +86,8 @@ class TiminingApplication : KtxApplicationAdapter {
         }
         spriteBatch.use {
             algorithm.getPopulation().iterator().forEach {
-                spriteBatch.draw(plane, it.getPosition()[0]-28, it.getPosition()[1]-28, 56f, 56f)
+                spriteBatch.draw(plane, it.getPosition()[0]-28, it.getPosition()[1]-28, 0f, 0f,
+                    56f, 56f,1f,1f, it.getAngle().toFloat(),0,0,745, 649,false,false)
             }
         }
     }
