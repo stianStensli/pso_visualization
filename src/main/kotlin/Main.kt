@@ -85,7 +85,7 @@ class TiminingApplication : KtxApplicationAdapter {
             }
             // Print global best
             val globalBest = algorithm.getGlobalBest()
-            it.circle(globalBest.getPosition()[0], globalBest.getPosition()[0], 10f)
+            it.circle(globalBest.getPosition()[0]-5, globalBest.getPosition()[0]-5, 10f)
         }
         spriteBatch.use {
             algorithm.getPopulation().iterator().forEach {
