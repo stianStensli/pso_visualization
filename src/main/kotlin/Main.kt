@@ -12,7 +12,7 @@ import ktx.graphics.use
 import model.PSO
 import kotlin.math.*
 
-const val WIDTH = 1920
+const val WIDTH = 1080
 const val HEIGHT = 1080
 const val FPS = 30
 
@@ -83,11 +83,14 @@ class TiminingApplication : KtxApplicationAdapter {
                 offsetX = 0f
                 offsetY += size
             }
+            // Print global best
+            val globalBest = algorithm.getGlobalBest()
+            it.circle(globalBest.getPosition()[0], globalBest.getPosition()[0], 10f)
         }
         spriteBatch.use {
             algorithm.getPopulation().iterator().forEach {
                 spriteBatch.draw(plane, it.getPosition()[0]-28, it.getPosition()[1]-28, 0f, 0f,
-                    56f, 56f,1f,1f, it.getAngle().toFloat(),0,0,745, 649,false,false)
+                    56f, 56f,1f,1f, it.getAngle().toFloat()+225,0,0,745, 649,false,false)
             }
         }
     }

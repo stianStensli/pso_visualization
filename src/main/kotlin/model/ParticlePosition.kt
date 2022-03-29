@@ -5,15 +5,15 @@ import java.lang.Float.min
 import kotlin.random.Random.Default.nextFloat
 
 const val SIZE_OF_BOARD = 1080f
-
 class ParticlePosition(x: Float, y: Float) {
     private var position: FloatArray
     private var fitness: Float = 0.0f
 
     fun getPosition() = position
     fun getFitness() = fitness
-    fun setFitness(value: Float) {
+    fun setFitness(value: Float): ParticlePosition {
         fitness = value
+        return this
     }
 
     fun updatePosition(velocity: FloatArray) {

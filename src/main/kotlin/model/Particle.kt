@@ -47,7 +47,7 @@ class Particle {
         position.setFitness(currentFitness)
 
         if (currentFitness > personalBest.getFitness()) {
-            personalBest = position
+            personalBest = clonePosition(position)
         }
     }
 }

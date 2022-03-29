@@ -28,11 +28,15 @@ class PSO : Algorithm {
 
     private fun updateGlobal(indv: Particle) {
         if (indv.getBestFitness() > globalBest.getFitness()) {
-            globalBest = indv.getPersonalBest()
+            globalBest = clonePosition(indv.getPersonalBest())
         }
     }
 
     fun getPopulation() = population
 
     fun getGlobalBest() = globalBest
+}
+
+fun clonePosition(position: ParticlePosition): ParticlePosition {
+    return ParticlePosition(position.getPosition()[0],position.getPosition()[1]).setFitness(position.getFitness())
 }
